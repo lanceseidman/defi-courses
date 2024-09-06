@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Course Lookup</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .main {
+            min-height: 100vh;
+            padding: 4rem 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            line-height: 1.15;
+            font-size: 3rem;
+            text-align: center;
+            margin: 50px;
+        }
+
+        .title a {
+            color: #0070f3;
+            text-decoration: none;
+        }
+
+        .console {
+            max-width: 100%;
+        }
+
+        .user-info-table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .user-info-table th, .user-info-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .user-info-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        /* Hero Banner Styles */
+        .hero-banner {
+            height: 32vh;
+            background: linear-gradient(135deg, #5a9bd4, #1e90ff); /* Customize the gradient with Pantone colors */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Abstract Lines or Shapes */
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            top: -50%;
+            left: -50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        /* Title Styling */
+        .hero-banner h1 {
+            font-size: 3rem;
+            color: white;
+            z-index: 1;
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Animation for Background Elements */
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .tabs-container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-banner">
+        <h1>DeFi Student Records</h1> <!-- You can customize or remove this text -->
+    </section>
+
+    <!-- Logged In -->
+    <div class="container mt-5">
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs" id="userProfileTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="user-info-tab" data-bs-toggle="tab" data-bs-target="#user-info" type="button" role="tab" aria-controls="user-info" aria-selected="true">User Info</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="accounts-tab" data-bs-toggle="tab" data-bs-target="#accounts" type="button" role="tab" aria-controls="accounts" aria-selected="false">Accounts</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="balance-tab" data-bs-toggle="tab" data-bs-target="#balance" type="button" role="tab" aria-controls="balance" aria-selected="false">Balance</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="sign-message-tab" data-bs-toggle="tab" data-bs-target="#sign-message" type="button" role="tab" aria-controls="sign-message" aria-selected="false">Sign Message</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="wallet-tab" data-bs-toggle="tab" data-bs-target="#wallet" type="button" role="tab" aria-controls="wallet" aria-selected="false">Show Wallet</button>
+            </li>
+            <li class="nav-item ms-auto" role="presentation">
+                <button class="nav-link text-danger" id="logout-tab" data-bs-toggle="tab" data-bs-target="#logout" type="button" role="tab" aria-controls="logout" aria-selected="false">Logout</button>
+            </li>
+        </ul>
+    
+        <!-- Tab Content -->
+        <div class="tab-content" id="userProfileTabContent">
+            <!-- User Info Tab -->
+            <div class="tab-pane fade show active" id="user-info" role="tabpanel" aria-labelledby="user-info-tab">
+                <div class="mt-4">
+                    <button id="get-user-info" class="btn btn-primary">Get User Info</button>
+                <!-- Table for displaying User Info -->
+                <div id="user-info-section" class="mt-4" style="display: none;">
+                    <h5>User Information</h5>
+                    <table id="user-info-table" class="user-info-table table table-striped">
+                        <!-- Table content will be injected here -->
+                    </table>
+                </div>
+                </div>
+            </div>
+            
+            <!-- Accounts Tab -->
+            <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
+                <div class="mt-4">
+                    <button id="get-accounts" class="btn btn-primary">Get Accounts</button>
+                </div>
+            </div>
+            
+            <!-- Balance Tab -->
+            <div class="tab-pane fade" id="balance" role="tabpanel" aria-labelledby="balance-tab">
+                <div class="mt-4">
+                    <button id="get-balance" class="btn btn-primary">Get Balance</button>
+                </div>
+            </div>
+            
+            <!-- Sign Message Tab -->
+            <div class="tab-pane fade" id="sign-message" role="tabpanel" aria-labelledby="sign-message-tab">
+                <div class="mt-4">
+                    <button id="sign-message" class="btn btn-primary">Sign Message</button>
+                </div>
+            </div>
+            
+            <!-- Show Wallet Tab -->
+            <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+                <div class="mt-4">
+                    <button id="show-wallet" class="btn btn-primary">Show Wallet</button>
+                </div>
+            </div>
+    
+            <!-- Logout Tab -->
+            <div class="tab-pane fade" id="logout" role="tabpanel" aria-labelledby="logout-tab">
+                <div class="mt-4">
+                    <button id="logout" class="btn btn-danger">Logout</button>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Console (Shared Across All Tabs) -->
+        <div class="console mt-5" id="console">
+            <p id="code" class="code"></p>
+        </div>
+    </div>
+    <!-- Container for Tabbed Interface -->
+    <div class="container tabs-container">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button" role="tab" aria-controls="students" aria-selected="true">Students</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="lookup-tab" data-bs-toggle="tab" data-bs-target="#lookup" type="button" role="tab" aria-controls="lookup" aria-selected="false">Lookup Student</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab" aria-controls="create" aria-selected="false">Create Entry</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+
+            <!-- Student Lookup Tab -->
+            <div class="tab-pane active" id="students" role="tabpanel" aria-labelledby="students-tab">
+                <div id="studentsResult" class="mt-4">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>            
+
+            <!-- Lookup Tab -->
+            <div class="tab-pane fade" id="lookup" role="tabpanel" aria-labelledby="lookup-tab">
+                <form id="lookupForm" class="mt-4">
+                    <div class="mb-3">
+                        <label for="studentId" class="form-label">Enter Student ID</label>
+                        <input type="text" class="form-control" id="studentId" placeholder="Enter Student ID">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lookup Courses</button>
+                </form>
+                <div id="coursesResult" class="mt-4">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+
+            <!-- Create Entry Tab -->
+            <div class="tab-pane fade show" id="create" role="tabpanel" aria-labelledby="create-tab">
+                <form id="createForm" class="mt-4">
+                    <div class="mb-3">
+                        <label for="newStudentId" class="form-label">Student ID</label>
+                        <input type="text" class="form-control" id="newStudentId" placeholder="Enter Student ID">
+                    </div>
+                    <div class="mb-3">
+                        <label for="courseTitle" class="form-label">Course Title</label>
+                        <input type="text" class="form-control" id="courseTitle" placeholder="Enter Course Title">
+                    </div>
+                    <button type="submit" class="btn btn-success">Create Entry</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+    <script src="https://unpkg.com/base64-js@1.5.1/base64js.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@web3auth/wallet-services-plugin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@4.1.1/dist/web3.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+
+        // Populate the Students
+        async function getStudents(){
+        try {
+                const response = await fetch(`/getStudents`);
+                const courses = await response.json();
+
+                const coursesResultDiv = document.getElementById('studentsResult');
+                coursesResultDiv.innerHTML = '';
+
+                if (courses.length > 0) {
+                    const list = document.createElement('ul');
+                    list.classList.add('list-group');
+                    courses.forEach(course => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('list-group-item');
+                        listItem.textContent = `Course Title: ${course['Course Title']} | Completed on: ${course['Completion Date']}`;
+                        list.appendChild(listItem);
+                    });
+                    coursesResultDiv.appendChild(list);
+                } else {
+                    coursesResultDiv.textContent = 'No courses or students found.';
+                }
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+                document.getElementById('coursesResult').textContent = 'Error fetching courses and students. Please try again later.';
+            }
+        } getStudents();
+        // Handle the lookup form submission
+        document.getElementById('lookupForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const studentId = document.getElementById('studentId').value;
+            try {
+                const response = await fetch(`/getStudentCourses/${studentId}`);
+                const courses = await response.json();
+
+                const coursesResultDiv = document.getElementById('coursesResult');
+                coursesResultDiv.innerHTML = '';
+
+                if (courses.length > 0) {
+                    const list = document.createElement('ul');
+                    list.classList.add('list-group');
+                    courses.forEach(course => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('list-group-item');
+                        listItem.textContent = `Course Title: ${course['Course Title']} | Completed on: ${course['Completion Date']}`;
+                        list.appendChild(listItem);
+                    });
+                    coursesResultDiv.appendChild(list);
+                } else {
+                    coursesResultDiv.textContent = 'No courses found for this student ID.';
+                }
+            } catch (error) {
+                console.error('Error fetching courses:', error);
+                document.getElementById('coursesResult').textContent = 'Error fetching courses. Please try again later.';
+            }
+        });
+
+
+        // Handle the create form submission
+        document.getElementById('createForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const newStudentId = document.getElementById('newStudentId').value;
+            const courseTitle = document.getElementById('courseTitle').value;
+
+            const response = await fetch('/createEntry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    studentId: newStudentId,
+                    courseTitle: courseTitle
+                })
+            });
+
+            const result = await response.json();
+            alert(result.message); // Simple alert, can be styled or enhanced
+        });
+
+       
+        document.getElementById('get-user-info').addEventListener('click', async function() {
+        try {
+            // Fetch user info from the Web3Auth API (replace with actual API call)
+            const userInfo = await web3auth.getUserInfo(); // Replace with actual Web3Auth method
+            
+            // Display the user info in a table
+            const userInfoSection = document.getElementById('user-info-section');
+            const userInfoTable = document.getElementById('user-info-table');
+            const consoleDiv = document.getElementById('console');
+
+            document.getElementById('console').style.display = 'none';
+            document.getElementById('user-info-section').style.display = 'block';
+
+            // Clear any previous content
+            userInfoTable.innerHTML = '';
+
+            // Populate the table with user info, ignoring "AppState"
+            for (const [key, value] of Object.entries(userInfo)) {
+                if (key === 'appState') continue; // Skip the "AppState" key
+
+                const row = document.createElement('tr');
+                const cellKey = document.createElement('th');
+                const cellValue = document.createElement('td');
+                
+                cellKey.textContent = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize the key
+                cellValue.textContent = value;
+                
+                row.appendChild(cellKey);
+                row.appendChild(cellValue);
+                userInfoTable.appendChild(row);
+            }
+
+            // Show the user info section and hide the console
+            userInfoSection.style.display = 'block';
+            consoleDiv.style.display = 'none';
+        } catch (error) {
+            // Show the error in the console and hide the user info section
+            document.getElementById('code').textContent = `Error: ${error.message}`;
+            document.getElementById('console').style.display = 'block';
+            document.getElementById('user-info-section').style.display = 'none';
+        }
+    });
+
+    // If the user info section is closed, show the console again
+    function closeUserInfoSection() {
+        const userInfoSection = document.getElementById('user-info-section');
+        const consoleDiv = document.getElementById('console');
+
+        userInfoSection.style.display = 'none';
+        consoleDiv.style.display = 'block';
+    }
+
+    function showConsole() {
+        const consoleDiv = document.getElementById('console');
+        consoleDiv.style.display = 'block';
+    }
+
+        document.getElementById('get-accounts').addEventListener('click', async function() {
+            try {
+                closeUserInfoSection();
+                const accounts = await web3auth.provider.request({ method: 'eth_accounts' }); // Use the provider for accounts
+                document.getElementById('code').textContent = JSON.stringify(accounts, null, 2);
+            } catch (error) {
+                document.getElementById('code').textContent = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('get-balance').addEventListener('click', async function() {
+            try {
+                closeUserInfoSection();
+                const balance = await web3auth.provider.request({ method: 'eth_getBalance', params: [yourAddress, "latest"] }); // Replace with actual address
+                document.getElementById('code').textContent = `Balance: ${balance}`;
+            } catch (error) {
+                document.getElementById('code').textContent = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('sign-message').addEventListener('click', async function() {
+            try {
+                closeUserInfoSection();
+                const message = "Hello!";
+                const signedMessage = await web3auth.provider.request({ method: 'personal_sign', params: [message, yourAddress] }); // Use the provider to sign
+                document.getElementById('code').textContent = `Signed Message: ${signedMessage}`;
+            } catch (error) {
+                document.getElementById('code').textContent = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('show-wallet').addEventListener('click', async function() {
+            try {
+                closeUserInfoSection();
+                const walletInfo = await web3auth.provider.request({ method: 'eth_accounts' }); // Or another appropriate method
+                document.getElementById('code').textContent = JSON.stringify(walletInfo, null, 2);
+            } catch (error) {
+                document.getElementById('code').textContent = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('logout').addEventListener('click', async function() {
+            try {
+                closeUserInfoSection();
+                await web3auth.logout();
+                document.getElementById('code').textContent = 'Logged out successfully.';
+            } catch (error) {
+                document.getElementById('code').textContent = `Error: ${error.message}`;
+            }
+        });
+
+    </script>
+</body>
+</html>
